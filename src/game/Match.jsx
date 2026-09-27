@@ -448,7 +448,7 @@ export function Match() {
     <Canvas
       shadows
       dpr={[1, 1.75]}
-      camera={{ fov: 50, near: 0.5, far: 600, position: [0, 26, 40] }}
+      camera={{ fov: 50, near: 0.5, far: 600, position: [0, 31, 47] }}
       gl={{ antialias: true }}
     >
       <color attach="background" args={["#0a0f1e"]} />
