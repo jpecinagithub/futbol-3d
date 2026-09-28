@@ -1,11 +1,16 @@
 // Selección de jugador (Q, Fase B).
 // Con dirección pulsada: el compañero (no portero) más cercano a esa
 // dirección desde el controlado (alineación > 0.25, prima cercanía).
-// Sin dirección: el compañero más cercano al balón.
+// Sin dirección: cicla por cercanía al balón (más cercano, segundo, ...).
+// Si pasa más de CYCLE_WINDOW s entre pulsaciones, vuelve al más cercano.
 // Nunca aleatorio: criterio futbolístico.
 
 import { getControlled } from "./engine";
 import { possessorOf } from "./possession";
+
+// Ventana para seguir ciclando con Q; pasado este tiempo se reinicia al
+// más cercano al balón.
+const CYCLE_WINDOW = 1.5;
 
 export function switchPlayer(engine, move) {
   const cur = getControlled(engine);
@@ -28,14 +33,30 @@ export function switchPlayer(engine, move) {
       const score = align * 2 - d * 0.04;
       if (score > bestScore) { bestScore = score; best = p; }
     }
+    // Cambio direccional: reinicia el ciclo de cercanía.
+    engine.switchCycleT = 0;
+    engine.switchCycleIdx = -1;
   }
   if (!best) {
+    // Ordenados por distancia al balón; se avanza un puesto por pulsación.
     const b = engine.ball;
-    let bd = Infinity;
-    for (const p of mates) {
-      const d = Math.hypot(p.x - b.x, p.z - b.z);
-      if (d < bd) { bd = d; best = p; }
+    const ordered = mates
+      .map((p) => ({ p, d: Math.hypot(p.x - b.x, p.z - b.z) }))
+      .sort((a, c) => a.d - c.d);
+    let idx = 0;
+    const now = engine.time;
+    if (
+      engine.switchCycleT &&
+      now - engine.switchCycleT < CYCLE_WINDOW &&
+      engine.switchCycleUid === cur.uid &&
+      engine.switchCycleIdx >= 0
+    ) {
+      idx = (engine.switchCycleIdx + 1) % ordered.length;
     }
+    best = ordered[idx].p;
+    engine.switchCycleT = now;
+    engine.switchCycleIdx = idx;
+    engine.switchCycleUid = best.uid;
   }
   if (best && best !== cur) {
     // Si el usuario suelta al portador del balón, la IA no lo rifa de
