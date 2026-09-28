@@ -6,7 +6,7 @@
 // - SETUP: freeze breve; los 22 se colocan en sus posiciones reglamentarias
 //   simplificadas (decideDeadBall, en vez del decideTeam normal).
 // - READY: el balón está quieto; si saca la IA ejecuta en 1.5–2.5 s; si saca
-//   el usuario, apunta con WASD y ejecuta con X (raso) / A (alto) / D (tiro).
+//   el usuario, apunta con IJKL y ejecuta con A (toque: saque; mantener: tiro con carga).
 // - EXECUTED: el saque ya se ejecutó (1 s); el juego es abierto pero la IA
 //   sabe que viene de una reanudación; al terminar se resetean las fases
 //   colectivas (el que saca, a atacar).
@@ -500,11 +500,11 @@ export function enterReady(engine) {
   let txt = db.notice || kindName;
   if (!db.notice) {
     if (db.userKicking) {
-      if (db.kind === "penalty") txt = "¡Penalti a favor! Apunta con WASD y pulsa D para cargar (X: colocado)";
-      else if (db.kind === "free-kick") txt = "Tiro libre: apunta con WASD · X raso · A alto · D tiro con carga";
-      else txt = `${kindName}: apunta con WASD · X raso · A alto`;
+      if (db.kind === "penalty") txt = "¡Penalti a favor! Apunta con IJKL · A para tirar (mantener: con carga)";
+      else if (db.kind === "free-kick") txt = "Tiro libre: apunta con IJKL · A para sacar (mantener: tiro con carga)";
+      else txt = `${kindName}: apunta con IJKL · A para sacar`;
     } else if (db.userKeeping) {
-      txt = "¡Penalti en contra! Mueve al portero con A/D y pulsa D para lanzarte";
+      txt = "¡Penalti en contra! Mueve al portero con J/L y pulsa A para lanzarte";
     }
   }
   setDeadBallNotice(txt, 0);
@@ -787,7 +787,7 @@ function keeperDiveNow(engine) {
 
 /**
  * Entrada del usuario durante DEAD_BALL_READY (la llama actions.js).
- * - WASD/flechas: puntería (el lanzador no se mueve).
+ * - IJKL/flechas: puntería (el lanzador no se mueve).
  * - X: saque raso · A: saque alto.
  * - D: en libre/penalti a favor, tiro con carga (más carga = más riesgo);
  *   defendiendo un penalti, estirada del portero.
@@ -809,21 +809,29 @@ export function processDeadBallActions(engine, fin, dt) {
   if (db.userKeeping) {
     if (Math.abs(fin.move.x) > 0.2) db.keeperLean = Math.sign(fin.move.x);
     for (const ev of fin.events) {
-      if (ev === "shootDown") keeperDiveNow(engine);
+      if (ev === "actionDown") keeperDiveNow(engine);
     }
     return;
   }
   if (!db.userKicking) return;
-  for (const ev of fin.events) {
-    if (ev === "pass") executeDeadBall(engine, "flat");
-    else if (ev === "cross") executeDeadBall(engine, "high");
-    else if (ev === "shootDown") {
-      if (db.kind === "free-kick" || db.kind === "penalty") {
-        const kicker = byUid(engine, db.kickerUid);
-        if (kicker) startShotCharge(engine, kicker, db.aim);
-      }
+  // A mantenida en libre/penalti: empieza la carga de tiro (0,35 s)
+  const aHeld = !!fin.downCodes["KeyA"];
+  if (!engine.charge && aHeld && (db.kind === "free-kick" || db.kind === "penalty")) {
+    db.holdT = (db.holdT || 0) + dt;
+    if (db.holdT > 0.35) {
+      const kicker = byUid(engine, db.kickerUid);
+      if (kicker) startShotCharge(engine, kicker, db.aim);
+      db.holdT = 0;
     }
-    // 'shootUp' lo consume updateCharge (suelta el tiro).
+  } else if (!aHeld) {
+    db.holdT = 0;
+  }
+  for (const ev of fin.events) {
+    // A soltada sin carga: ejecuta el saque (córner por alto, resto raso)
+    if (ev === "actionUp" && !engine.charge) {
+      executeDeadBall(engine, db.kind === "corner" ? "high" : "flat");
+    }
+    // 'actionDown' con carga la consume updateCharge (suelta el tiro).
   }
 }
 

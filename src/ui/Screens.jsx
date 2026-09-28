@@ -13,7 +13,7 @@ export function MainMenu() {
       <p className="game-subtitle">Estadio Aurora · 11 contra 11 · 100 % original</p>
       <button className="btn" onClick={() => setPhase("select")}>Jugar partido</button>
       <p className="hint" style={{ marginTop: 24 }}>
-        Mueve a tu delantero con WASD o las flechas · Empuja el balón al contacto
+        Mueve a tu delantero con IJKL o las flechas · Empuja el balón al contacto
       </p>
     </div>
   );

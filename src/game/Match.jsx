@@ -346,7 +346,7 @@ function PassIndicator({ engine }) {
 
 // ---------- Puntería en balón parado (Fase D) ----------
 // Flecha amarilla desde el balón en la dirección de la puntería del
-// usuario (WASD) mientras prepara un saque (DEAD_BALL_READY).
+// usuario (IJKL) mientras prepara un saque (DEAD_BALL_READY).
 function DeadBallAim({ engine }) {
   const g = useRef();
   useFrame(() => {

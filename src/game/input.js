@@ -1,29 +1,24 @@
-// Gestor de entrada unificado: teclado (WASD/flechas + teclas de acción) y
+// Gestor de entrada unificado: teclado (IJKL/flechas + teclas de acción) y
 // gamepad (Gamepad API, sondeado cada frame). Produce por frame:
 //   { move:{x,z}, downCodes, sprint, sprintPressed, dribbleMod, helper,
 //     shootHeld, events[] }
 //
-// Decisiones de diseño (documentadas también en CONTROLES.md):
-// - W: si el controlado TIENE el balón al pulsar => pase al hueco (evento
-//   'through'); si no lo tiene => solo movimiento hacia arriba. Con balón,
-//   W hace ambas cosas: dispara el pase una vez y sigue moviendo arriba.
-// - A: igual que W pero con centro / pase alto (evento 'cross').
-// - D: con balón => tiro (pulsar = empezar a cargar, soltar = golpear;
-//   mientras se carga, D no mueve a la derecha — usa la flecha →).
-//   Sin balón => entrada (evento 'tackle') al pulsar; mantener D sigue
-//   moviendo a la derecha.
-// - X: pase raso (solo con balón). Q: cambio de jugador. E (mantener):
-//   segundo defensor. Ctrl (mantener): modificador de regate.
-//   Shift (mantener): sprint.
+// Esquema simplificado:
+// - IJKL o flechas: mover (I = arriba). Shift (mantener): sprint.
+// - A: tecla de acción contextual. CON balón: toque = pase raso al compañero
+//   (siempre va a un compañero); mantener >0,35 s = cargar tiro, soltar =
+//   disparar. SIN balón: entrada al pulsar. Mientras se carga el tiro, A no
+//   mueve (usa las flechas/IJKL para apuntar).
+// - Q: cambio de jugador. Tab: estadísticas. Esc: pausa.
 // - Gamepad estándar: stick izquierdo = mover, RT = sprint, A = pase raso,
 //   Y = pase al hueco, B = tiro (mantener para cargar), X = centro/alto,
 //   LB = cambio de jugador, RB = segundo defensor, LT = regate.
 //   Sin gamepad se ignora sin errores.
 
 const GAME_KEYS = [
-  "KeyW", "KeyA", "KeyS", "KeyD", "KeyX", "KeyQ", "KeyE",
+  "KeyI", "KeyJ", "KeyK", "KeyL", "KeyA", "KeyQ",
   "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
-  "ShiftLeft", "ShiftRight", "ControlLeft", "ControlRight",
+  "ShiftLeft", "ShiftRight",
 ];
 
 export function createInputState() {
@@ -62,15 +57,15 @@ export function detachKeyboard(st) {
   if (st._detach) st._detach();
 }
 
-/** Movimiento 2D desde el mapa de teclas (relativo a cámara broadcast: W = -Z). */
+/** Movimiento 2D desde el mapa de teclas (relativo a cámara broadcast: I = -Z). */
 export function computeMove(keys, exclude = []) {
   const ex = new Set(exclude);
   const has = (c) => keys[c] && !ex.has(c);
   let x = 0, z = 0;
-  if (has("KeyA") || has("ArrowLeft")) x -= 1;
-  if (has("KeyD") || has("ArrowRight")) x += 1;
-  if (has("KeyW") || has("ArrowUp")) z -= 1;
-  if (has("KeyS") || has("ArrowDown")) z += 1;
+  if (has("KeyJ") || has("ArrowLeft")) x -= 1;
+  if (has("KeyL") || has("ArrowRight")) x += 1;
+  if (has("KeyI") || has("ArrowUp")) z -= 1;
+  if (has("KeyK") || has("ArrowDown")) z += 1;
   const l = Math.hypot(x, z);
   if (l > 1) { x /= l; z /= l; }
   return { x, z };
@@ -139,17 +134,14 @@ export function pollFrameInput(st) {
     sprint: !!(k["ShiftLeft"] || k["ShiftRight"]) || pad.sprint,
     sprintPressed:
       q.includes("ShiftLeft") || q.includes("ShiftRight") || pad.sprintPressed,
-    dribbleMod: !!(k["ControlLeft"] || k["ControlRight"]) || pad.dribbleMod,
-    helper: !!k["KeyE"] || pad.helper,
-    shootHeld: !!k["KeyD"] || pad.shootHeld,
+    dribbleMod: pad.dribbleMod,
+    helper: pad.helper,
+    shootHeld: !!k["KeyA"] || pad.shootHeld,
     events: [...pad.events],
   };
   for (const code of q) {
-    if (code === "KeyX") fin.events.push("pass");
-    else if (code === "KeyW") fin.events.push("through");
-    else if (code === "KeyA") fin.events.push("cross");
-    else if (code === "KeyD") fin.events.push("shootDown");
-    else if (code === "^KeyD") fin.events.push("shootUp");
+    if (code === "KeyA") fin.events.push("actionDown");
+    else if (code === "^KeyA") fin.events.push("actionUp");
     else if (code === "KeyQ") fin.events.push("switch");
   }
   return fin;

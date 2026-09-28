@@ -29,9 +29,8 @@ export function HUD() {
       </div>
       <DeadBallIndicator />
       <div className="hud-hint">
-        <b>WASD/Flechas:</b> mover · <b>Shift:</b> sprint · <b>X:</b> pase ·{" "}
-        <b>W:</b> hueco · <b>D:</b> tiro/entrada · <b>A:</b> centro ·{" "}
-        <b>Q:</b> cambiar · <b>E:</b> ayuda · <b>Ctrl:</b> regate ·{" "}
+        <b>IJKL/Flechas:</b> mover · <b>Shift:</b> sprint ·{" "}
+        <b>A:</b> pasar / entrada (mantener: tiro) · <b>Q:</b> cambiar ·{" "}
         <b>Tab:</b> estadísticas · <b>Esc:</b> pausa
       </div>
     </>
@@ -65,13 +64,13 @@ export function DeadBallIndicator() {
     return () => clearInterval(id);
   }, []);
   if (!info) return null;
-  let instr = "Apunta con WASD · X raso · A alto";
+  let instr = "Apunta con IJKL · A para sacar";
   if (info.kind === "penalty" && info.userKeeping) {
-    instr = "Mueve al portero con A/D · D para lanzarte";
+    instr = "Mueve al portero con J/L · A para lanzarte";
   } else if (info.kind === "penalty") {
-    instr = "Apunta con WASD · D para cargar (X: colocado)";
+    instr = "Apunta con IJKL · A para tirar (mantener: con carga)";
   } else if (info.kind === "free-kick") {
-    instr = "Apunta con WASD · X raso · A alto · D tiro con carga";
+    instr = "Apunta con IJKL · A para sacar (mantener: tiro con carga)";
   }
   return (
     <div className="deadball-indicator">
@@ -137,19 +136,13 @@ export function StatsOverlay() {
   );
 }
 
-// ---------- Tabla de controles (Fase B, integrada en la pausa) ----------
+// ---------- Tabla de controles (integrada en la pausa) ----------
 const CONTROL_ROWS = [
-  ["WASD / Flechas", "Moverse (W = atacar, hacia arriba en pantalla)"],
+  ["IJKL / Flechas", "Moverse (I = atacar, hacia arriba en pantalla)"],
   ["Shift", "Sprint (consume stamina; fundido = menos punta)"],
-  ["X", "Pase raso al compañero mejor colocado"],
-  ["W (con balón)", "Pase al hueco (sin balón: moverse arriba)"],
-  ["D (con balón)", "Tiro: mantén para cargar potencia, suelta para golpear"],
-  ["D (sin balón)", "Entrada / barrida hacia el input o el balón"],
-  ["A (con balón)", "Centro / pase alto al área"],
+  ["A (con balón)", "Toque: pase raso al compañero · Mantener: cargar tiro, soltar: disparar"],
+  ["A (sin balón)", "Entrada / presión hacia el input o el balón"],
   ["Q", "Cambiar de jugador (hacia la dirección pulsada o el más cercano al balón)"],
-  ["E (mantener)", "Segundo defensor: un compañero presiona también"],
-  ["Ctrl (mantener)", "Regate: toques cortos, protege el balón con el cuerpo"],
-  ["Ctrl + Shift", "Acelerón corto para superar al marcador (1,5 s de espera)"],
   ["Tab", "Mostrar / ocultar las estadísticas del partido"],
   ["Esc", "Pausa"],
 ];

@@ -50,7 +50,7 @@ const place = () =>
       for (const p of e.players) p.hasBall = false;
       e.ball.x = bx;
       e.ball.z = bz;
-      e.ball.y = 0.11;
+      e.ball.y = 0.17;
       e.ball.vx = e.ball.vy = e.ball.vz = 0;
       e.ball.lastTouch = null;
       e.ball.touchCooldown = 0;

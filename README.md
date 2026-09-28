@@ -82,26 +82,17 @@ puerta, tiros libres con barrera a 9,15 m y penaltis.
 
 | Tecla | Acción |
 |---|---|
-| `WASD` / Flechas | Moverse (relativo a cámara broadcast: `W` = atacar, hacia arriba en pantalla) |
+| `IJKL` / Flechas | Moverse (relativo a cámara broadcast: `I` = atacar, hacia arriba en pantalla) |
 | `Shift` | Sprint. Consume stamina; si baja de 25, pierdes punta y calidad técnica |
-| `X` | Pase raso al compañero mejor colocado en el cono frontal |
-| `W` (con balón) | Pase al hueco: adelantado al espacio del que mejor desmarque tenga |
-| `D` (con balón) | Tiro: **mantén** para cargar potencia (0–1 s), **suelta** para golpear |
-| `D` (sin balón) | Entrada / barrida corta hacia la dirección pulsada (o hacia el balón) |
-| `A` (con balón) | Centro / pase alto al área rival |
+| `A` (con balón) | Toque: pase raso al compañero (siempre a un compañero). **Mantener** >0,35 s: cargar tiro; **soltar**: disparar |
+| `A` (sin balón) | Entrada / presión hacia la dirección pulsada (o hacia el balón) |
 | `Q` | Cambiar de jugador (hacia la dirección pulsada, o el más cercano al balón) |
-| `E` (mantener) | Segundo defensor: el compañero más cercano al poseedor rival también presiona |
-| `Ctrl` (mantener) | Regate: toques más cortos y pegados, giros más cerrados, protege el balón |
-| `Ctrl` + `Shift` | Acelerón corto para superar al marcador (espera 1,5 s entre usos) |
 | `Tab` | Mostrar / ocultar las estadísticas del partido |
 | `Esc` | Pausa |
 
-**Teclas con doble función:** `W`, `A` y `D` pertenecen a `WASD` y son teclas
-de acción. `W`/`A` disparan la acción **al pulsarlas** y siguen moviendo
-mientras se mantienen. `D` con balón carga el tiro (no mueve a la derecha
-mientras carga: usa la flecha `→` para apuntar en movimiento). ⚠️ Evita
-`Ctrl`+`W`: el navegador lo interpreta como "cerrar pestaña" y no se puede
-bloquear.
+**La tecla `A`:** con balón, un toque pasa y mantener carga el tiro (mientras
+carga, `A` no mueve: apunta con `IJKL`/flechas). Sin balón, `A` es la entrada.
+A balón parado se apunta con `IJKL` y `A` ejecuta el saque.
 
 ### Mando (Gamepad API)
 

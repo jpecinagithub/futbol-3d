@@ -173,7 +173,7 @@ function integratePlayer(p, dt, desVX, desVZ) {
     let d = target - p.facing;
     while (d > Math.PI) d -= Math.PI * 2;
     while (d <= -Math.PI) d += Math.PI * 2;
-    const tr = PLAYER.turnRate * (p.turnBoost || 1); // Ctrl: giro más cerrado
+    const tr = PLAYER.turnRate * (p.turnBoost || 1); // regate (mando): giro más cerrado
     p.facing += clamp(d, -tr * dt, tr * dt);
   }
 }
@@ -220,7 +220,7 @@ function scorerName(engine, side) {
 
 /**
  * Jugador controlado durante la colocación del balón parado (Fase D):
- * camina a su posición; el lanzador se queda quieto apuntando (WASD =
+ * camina a su posición; el lanzador se queda quieto apuntando (IJKL =
  * puntería, no movimiento) y el portero que defiende un penalti se mueve
  * por la línea y se estira con D.
  */
@@ -264,7 +264,7 @@ function moveControlledDeadBall(engine, p, input, dt) {
  * @param {object} engine
  * @param {number} dt paso fijo (segundos reales)
  * @param {{x:number,z:number,sprint?:boolean,dribble?:boolean}} input dirección
- *        del jugador controlado (WASD) + sprint y modificador de regate
+ *        del jugador controlado (IJKL) + sprint
  * @param {{onGoal:(side:string, scorer:string)=>void}} events
  */
 export function stepEngine(engine, dt, input, events) {
@@ -339,9 +339,9 @@ export function stepEngine(engine, dt, input, events) {
         integratePlayer(p, dt, p.tackleDx * 8.5, p.tackleDz * 8.5);
       } else {
         p.dribbleMod = !!input.dribble;
-        p.turnBoost = input.dribble ? 1.4 : 1; // Ctrl: giros más cerrados
+        p.turnBoost = input.dribble ? 1.4 : 1; // regate (mando): giros más cerrados
         // Sprint = velocidad máxima; sin sprint = trote (62 %). La stamina
-        // baja reduce la punta; con Ctrl y balón, algo menos de punta.
+        // baja reduce la punta; con regate (mando) y balón, algo menos de punta.
         let mul = input.sprint ? 1 : 0.62;
         if (input.dribble && p.hasBall) mul *= 0.85;
         mul *= staminaSpeedFactor(p);

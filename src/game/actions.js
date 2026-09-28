@@ -51,6 +51,18 @@ export function processActions(engine, fin, dt) {
     }
   }
 
+  // Tecla A con balón: mantener >0,35 s empieza la carga de tiro
+  const aHeld = !!fin.downCodes["KeyA"];
+  if (hasBall && aHeld && !engine.charge) {
+    engine.actionHoldT = (engine.actionHoldT || 0) + dt;
+    if (engine.actionHoldT > 0.35) {
+      startShotCharge(engine, ctrl, fin.move);
+      engine.actionHoldT = 0;
+    }
+  } else if (!aHeld) {
+    engine.actionHoldT = 0;
+  }
+
   for (const ev of fin.events) {
     switch (ev) {
       case "pass":
@@ -69,6 +81,18 @@ export function processActions(engine, fin, dt) {
       case "shootUp":
         if (engine.charge) releaseShot(engine);
         break;
+      case "actionDown":
+        // A pulsada sin balón => entrada inmediata
+        if (!hasBall) startTackle(engine, ctrl, fin.move);
+        break;
+      case "actionUp":
+        // A soltada con balón: si se estaba cargando el tiro, disparar;
+        // si fue un toque, pase raso al compañero
+        if (hasBall) {
+          if (engine.charge) releaseShot(engine);
+          else doGroundPass(engine, ctrl, fin.move);
+        }
+        break;
       case "switch":
         switchPlayer(engine, fin.move);
         break;
@@ -85,8 +109,8 @@ export function processActions(engine, fin, dt) {
   // Segundo defensor (E mantenido): el compañero más cercano presiona también
   engine.helperUid = fin.helper ? nearestHelper(engine, ctrl) : null;
 
-  // Mientras se carga el tiro, D no mueve a la derecha (usa la flecha →)
+  // Mientras se carga el tiro, A no mueve (usa IJKL/flechas para apuntar)
   if (engine.charge) {
-    fin.move = computeMove(fin.downCodes, ["KeyD"]);
+    fin.move = computeMove(fin.downCodes, ["KeyA"]);
   }
 }

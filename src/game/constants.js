@@ -24,7 +24,7 @@ export const GOAL = {
 };
 
 export const BALL = {
-  radius: 0.11,         // balón nº5 ≈ 22 cm de diámetro
+  radius: 0.17,         // balón nº5 ampliado (~1.5x) para que se vea bien en cámara broadcast
   restitution: 0.6,     // rebote contra el suelo
   rollFriction: 1.1,    // deceleración por rodadura (m/s²)
   airDrag: 0.18,        // resistencia aerodinámica (1/s, aprox. lineal)

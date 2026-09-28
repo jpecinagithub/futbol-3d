@@ -1,4 +1,4 @@
-# CONTROLES — FÚTBOL 3D (Fase B)
+# CONTROLES — FÚTBOL 3D
 
 Toda la UI del juego está en español. Los controles también se muestran en el
 menú de pausa (tecla `Esc` durante el partido).
@@ -7,35 +7,27 @@ menú de pausa (tecla `Esc` durante el partido).
 
 | Tecla | Acción |
 |---|---|
-| `WASD` / Flechas | Moverse (relativo a cámara broadcast: `W` = atacar, hacia arriba en pantalla) |
+| `IJKL` / Flechas | Moverse (relativo a cámara broadcast: `I` = atacar, hacia arriba en pantalla) |
 | `Shift` | Sprint. Consume stamina; si baja de 25, pierdes punta y calidad técnica |
-| `X` | Pase raso al compañero mejor colocado en el cono frontal |
-| `W` (con balón) | Pase al hueco: adelantado al espacio del que mejor desmarque tenga |
-| `D` (con balón) | Tiro: **mantén** para cargar potencia (0–1 s), **suelta** para golpear |
-| `D` (sin balón) | Entrada / barrida corta hacia la dirección pulsada (o hacia el balón) |
-| `A` (con balón) | Centro / pase alto al área rival |
+| `A` (con balón) | Toque: pase raso al compañero (siempre va a un compañero). **Mantener** >0,35 s: cargar tiro; **soltar**: disparar |
+| `A` (sin balón) | Entrada / presión hacia la dirección pulsada (o hacia el balón) |
 | `Q` | Cambiar de jugador |
-| `E` (mantener) | Segundo defensor: el compañero de campo más cercano al poseedor rival presiona también |
-| `Ctrl` (mantener) | Regate: toques más cortos y pegados, giros más cerrados, protege el balón con el cuerpo |
-| `Ctrl` + `Shift` | Acelerón corto para superar al marcador (espera 1,5 s entre usos) |
 | `Tab` | Mostrar / ocultar las estadísticas del partido |
 | `Esc` | Pausa |
 
-## Decisiones de diseño: teclas con doble función
+## Decisiones de diseño: la tecla A
 
-`W`, `A` y `D` pertenecen a `WASD` **y** son teclas de acción. Se resuelve así:
+`A` es la única tecla de acción (además de `Q`):
 
-- **W**: al **pulsar** con el balón, dispara el pase al hueco (una sola vez);
-  mientras se mantenga pulsada, sigue moviendo hacia arriba. Sin balón, `W`
-  solo mueve. (El pase al hueco es un evento de flanco; el movimiento es por
-  nivel: no se estorban.)
-- **A**: igual que `W`, pero con centro / pase alto.
-- **D**: con balón, **pulsar** empieza a cargar el tiro y **soltar** lo ejecuta.
-  Mientras se carga, `D` **no** mueve a la derecha (usa la flecha `→` para
-  apuntar en movimiento). Sin balón, pulsar `D` hace la entrada; mantenerla
-  sigue moviendo a la derecha.
-- ⚠️ Evita `Ctrl`+`W`: el navegador lo interpreta como "cerrar pestaña" y no
-  se puede bloquear desde el juego.
+- **Con balón**, un toque dispara el pase raso al compañero mejor colocado
+  (y si no hay nadie en la dirección del movimiento, al compañero más
+  cercano: el pase nunca se tira al vacío). Si se **mantiene** más de 0,35 s,
+  empieza la carga de tiro; al soltar, se golpea. Mientras se carga, `A`
+  **no** mueve (usa `IJKL`/flechas para apuntar).
+- **Sin balón**, pulsar `A` hace la entrada inmediatamente.
+- **A balón parado**: apuntar con `IJKL`/flechas; `A` ejecuta el saque
+  (córner por alto, resto raso); en libres y penaltis, mantener `A` carga
+  el tiro. Con el portero en un penalti en contra, `A` es lanzarse.
 
 ## Mando (Gamepad API)
 

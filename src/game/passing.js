@@ -71,7 +71,22 @@ function chooseInCone(engine, p, dx, dz) {
   return best;
 }
 
+/** Compañero de campo más cercano (red de seguridad: el pase siempre va a
+ *  un compañero, nunca se tira al vacío). */
+function nearestMate(engine, p) {
+  let best = null, bd = Infinity;
+  for (const q of engine.players) {
+    if (q.side !== p.side || q === p || q.role === "GK" || q.sentOff) continue;
+    const d = Math.hypot(q.x - p.x, q.z - p.z);
+    if (d < bd) { bd = d; best = q; }
+  }
+  return bd <= 45 ? best : null;
+}
+
 /** Pase raso con lead: apunta a dónde estará el receptor.
+ * El pase SIEMPRE va a un compañero: primero busca en el cono frontal del
+ * input (o del facing si no hay input); si no hay nadie ahí, va al compañero
+ * más cercano. Así las jugadas tienen continuidad.
  * @param {object} forcedMate - si se indica, se pasa a ese compañero en vez
  *        de elegir en el cono (lo usa la IA para que su elección mande). */
 export function doGroundPass(engine, p, move, forcedMate = null) {
@@ -79,11 +94,11 @@ export function doGroundPass(engine, p, move, forcedMate = null) {
   const m = move ? Math.hypot(move.x, move.z) : 0;
   const dx = m > 0.2 ? move.x / m : Math.cos(p.facing);
   const dz = m > 0.2 ? move.z / m : Math.sin(p.facing);
-  const mate = forcedMate || chooseInCone(engine, p, dx, dz);
+  const mate = forcedMate || chooseInCone(engine, p, dx, dz) || nearestMate(engine, p);
 
   let tx, tz, speed;
   if (!mate) {
-    // Sin receptor claro: pase de seguridad hacia delante.
+    // Sin ningún compañero a alcance: pase de seguridad hacia delante.
     tx = p.x + dx * 12; tz = p.z + dz * 12;
     speed = 14;
   } else {
