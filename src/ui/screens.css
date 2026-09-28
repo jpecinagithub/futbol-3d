@@ -184,11 +184,11 @@
   pointer-events: none;
 }
 
-/* Etiqueta del jugador controlado (proyección manual desde el Canvas) */
+/* Tarjeta del jugador controlado (fija abajo a la derecha) */
 .player-label {
   position: absolute;
-  top: 0;
-  left: 0;
+  right: 16px;
+  bottom: 16px;
   background: rgba(10, 14, 30, 0.78);
   color: #ffd21f;
   font-weight: 800;
@@ -197,7 +197,6 @@
   border-radius: 12px;
   border: 1px solid #ffd21f;
   white-space: nowrap;
-  will-change: transform;
 }
 .player-label .pl-bars { margin-top: 3px; display: flex; flex-direction: column; gap: 2px; }
 .player-label .pl-stam {

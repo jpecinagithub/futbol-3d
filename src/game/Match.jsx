@@ -133,9 +133,9 @@ function Simulation({ engine }) {
   return null;
 }
 
-// ---------- Anillo + nombre del jugador controlado ----------
-// El anillo es un mesh 3D; el nombre es un div HTML posicionado por proyección
-// manual (evita el coste y los matices del componente Html de drei).
+// ---------- Anillo + tarjeta del jugador controlado ----------
+// El anillo es un mesh 3D sobre el jugador; el nombre vive en una tarjeta
+// fija abajo a la derecha (nombre + dorsal, stamina y potencia de tiro).
 function ControlledMarker({ engine }) {
   const group = useRef();
   useFrame(() => {
@@ -154,9 +154,7 @@ function ControlledMarker({ engine }) {
 }
 
 function ControlledLabel({ engine }) {
-  const { camera, size } = useThree();
   const elRef = useRef(null);
-  const v = useMemo(() => new THREE.Vector3(), []);
   const lastUid = useRef(null);
   const lastName = useRef(null);
 
@@ -184,6 +182,7 @@ function ControlledLabel({ engine }) {
     const r = elRef.current;
     if (!r) return;
     const c = getControlled(engine);
+    if (!c) return;
     if (c.uid !== lastUid.current || c.data.name !== lastName.current) {
       lastUid.current = c.uid;
       lastName.current = c.data.name;
@@ -193,22 +192,13 @@ function ControlledLabel({ engine }) {
     const st = Math.max(0, Math.min(100, c.stamina));
     r.stam.style.width = `${st.toFixed(0)}%`;
     r.stam.style.background = st < 25 ? "#ff5d5d" : "#9fe870";
-    // Barra de potencia del tiro mientras se carga (D)
+    // Barra de potencia del tiro mientras se carga (A)
     if (engine.charge && engine.charge.uid === c.uid) {
       r.powerWrap.style.display = "block";
       r.power.style.width = `${(engine.charge.t * 100).toFixed(0)}%`;
     } else {
       r.powerWrap.style.display = "none";
     }
-    v.set(c.x, 2.55, c.z).project(camera);
-    if (v.z > 1 || v.z < -1) {
-      r.el.style.display = "none";
-      return;
-    }
-    r.el.style.display = "block";
-    const x = (v.x * 0.5 + 0.5) * size.width;
-    const y = (-v.y * 0.5 + 0.5) * size.height;
-    r.el.style.transform = `translate(-50%,-100%) translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
   });
   return null;
 }

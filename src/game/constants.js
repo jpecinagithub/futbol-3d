@@ -26,8 +26,8 @@ export const GOAL = {
 export const BALL = {
   radius: 0.17,         // balón nº5 ampliado (~1.5x) para que se vea bien en cámara broadcast
   restitution: 0.6,     // rebote contra el suelo
-  rollFriction: 1.1,    // deceleración por rodadura (m/s²)
-  airDrag: 0.18,        // resistencia aerodinámica (1/s, aprox. lineal)
+  rollFriction: 2.0,    // el balón pierde velocidad rodando, como un pase real
+  airDrag: 0.35,        // los tiros se frenan en el aire de forma visible
   magnus: 0.35,         // efecto del spin (fuerza lateral simplificada)
   stopSpeed: 0.25,      // por debajo se considera parado
   gravity: 9.81,
