@@ -69,8 +69,10 @@ export function dribbleTouch(engine, p) {
   }
 
   if (heavy) {
-    // Toque largo: el balón mantiene inercia y se escapa.
-    power = Math.min(power * 1.9, 13);
+    // Toque largo pero controlado: el balón se adelanta sin escaparse.
+    // (Con *1,9 hasta 13 m/s superaba el umbral de pérdida de posesión
+    //  (12 m/s) y se iba a ~5 m del jugador: esprintar perdía el balón.)
+    power = Math.min(power * 1.2, 8.8);
     const bs = Math.hypot(b.vx, b.vz);
     if (bs > 0.5) {
       dx = dx * 0.72 + (b.vx / bs) * 0.28;
@@ -85,7 +87,9 @@ export function dribbleTouch(engine, p) {
   const a = Math.atan2(dz, dx) + (rng() * 2 - 1) * err;
 
   kickBall(b, Math.cos(a), Math.sin(a), power, 0, 0, p.uid);
-  p.touchTimer = dribbleInterval(p, sp) * (heavy ? 1.45 : 1);
+  // Esprintando el siguiente toque llega antes (el balón no da tiempo a
+  // escaparse); en giro brusco o regate pobre el toque largo sí penaliza.
+  p.touchTimer = dribbleInterval(p, sp) * (heavy ? (sprinting ? 1.15 : 1.45) : 1);
   if (!p.anim.action) {
     p.anim.action = "kick";
     p.anim.timer = 0.2;
