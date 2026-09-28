@@ -190,8 +190,18 @@ function separatePlayers(players) {
       const min = a.radius + b.radius;
       if (d > 0.001 && d < min) {
         const push = ((min - d) / d) * 0.5;
-        a.x -= dx * push; a.z -= dz * push;
-        b.x += dx * push; b.z += dz * push;
+        // El poseedor planta los pies: el que llega rebota y él no se mueve.
+        // Sin esto, un contacto desplazaría al portador parado lejos de su
+        // propio balón hasta "escapársele" (>1,7 m), perdiéndolo sin que
+        // nadie se lo hubiera quitado de verdad.
+        if (a.hasBall && !b.hasBall) {
+          b.x += dx * push * 2; b.z += dz * push * 2;
+        } else if (b.hasBall && !a.hasBall) {
+          a.x -= dx * push * 2; a.z -= dz * push * 2;
+        } else {
+          a.x -= dx * push; a.z -= dz * push;
+          b.x += dx * push; b.z += dz * push;
+        }
       }
     }
   }

@@ -129,7 +129,8 @@ function bodyBlock(b, p, dx, dz, d) {
 
 /** Disputa suave: desvía el balón del poseedor sin barrida. Débil a
  *  propósito: el dueño del balón no lo pierde con facilidad; el balón
- *  queda cerca para que pueda recuperarlo. */
+ *  queda cerca para que pueda recuperarlo. No se usa contra el usuario
+ *  (él la conserva parado; hay que entrarle o esperar un balón suelto). */
 function pokeBall(engine, p, poss) {
   const b = engine.ball;
   const rng = engine.rng;
@@ -254,8 +255,10 @@ export function ballPlayerContact(engine, dt) {
       // se lo lleva por simple proximidad; solo cabe disputarlo con el poke
       // a menos de 0,6 m (o una entrada). Sin dueño, control normal.
       // (El poke vive aquí y no en el else: d < 0,6 también es < 0,78.)
+      // Al usuario no se le hace el poke (petición suya): para quitársela
+      // hay que entrarle o que la deje suelta de verdad.
       if (poss && poss.hasBall && ballSp < 4) {
-        if (p.side !== poss.side && d < 0.6 && p.pokeCd <= 0) {
+        if (p.side !== poss.side && !poss.controlled && d < 0.6 && p.pokeCd <= 0) {
           pokeBall(engine, p, poss);
         }
       } else {
@@ -269,8 +272,8 @@ export function ballPlayerContact(engine, dt) {
       // Disputa suave del controlado/rival cercano antes que bloqueo.
       // A 0.6 m: al alcance del presionador que entra a por el balón
       // (la separación entre jugadores es 0.7 m y el balón va a los pies),
-      // pero sin el robo a distancia de antes.
-      if (poss && p.side !== poss.side && ballSp < 4 && d < 0.6 && p.pokeCd <= 0) {
+      // pero sin el robo a distancia de antes. No se aplica al usuario.
+      if (poss && p.side !== poss.side && !poss.controlled && ballSp < 4 && d < 0.6 && p.pokeCd <= 0) {
         pokeBall(engine, p, poss);
       } else {
         bodyBlock(b, p, dx, dz, d);

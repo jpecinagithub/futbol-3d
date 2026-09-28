@@ -631,7 +631,13 @@ function defendDuty(p, ctx, tai, time, S) {
     // Si el poseedor está parado (no progresa ni amaga), contener a 1.4 m es
     // eterno: el presionador entra a distancia de poke (0.6 m) para
     // disputarla. Sin esto, un portador quieto retiene el balón para siempre.
-    if (carrier && dCarrier < 2.4 && Math.hypot(carrier.vx, carrier.vz) < 0.6) {
+    // Excepción a petición del usuario: si el parado es ÉL (controlado por
+    // teclado), se contiene sin entrar: conserva el balón mientras no lo
+    // juegue (no hay poke contra el usuario; para quitársela hay que
+    // entrarle o que la deje suelta de verdad).
+    const userHolding =
+      carrier && carrier.controlled && Math.hypot(carrier.vx, carrier.vz) < 0.6;
+    if (carrier && !userHolding && dCarrier < 2.4 && Math.hypot(carrier.vx, carrier.vz) < 0.6) {
       diveIn = true;
     }
     if (carrier && p.tackleCd <= 0) {
@@ -683,7 +689,22 @@ function defendDuty(p, ctx, tai, time, S) {
       const dx = gx - ltx;
       const dz = 0 - ltz;
       const l = Math.hypot(dx, dz) || 1;
-      setGoal(p, ltx + (dx / l) * 1.4, ltz + (dz / l) * 1.4, 0.95);
+      // Al usuario parado se le contiene de lejos y sin prisa: ni se le entra.
+      // (Llegar suave evita sobrepasar y acabar pegado; la zona de exclusión
+      // es la red de seguridad: si ya está a <1,5 m, retrocede radialmente
+      // en vez de atravesarlo — atravesarlo lo desplazaría con
+      // separatePlayers lejos de su propio balón hasta "escapársele".)
+      if (userHolding) {
+        if (dCarrier < 1.5) {
+          const bx = p.x - tx, bz = p.z - tz;
+          const bl = Math.hypot(bx, bz) || 1;
+          setGoal(p, tx + (bx / bl) * 2.0, tz + (bz / bl) * 2.0, 0.5);
+        } else {
+          setGoal(p, ltx + (dx / l) * 2.2, ltz + (dz / l) * 2.2, 0.5);
+        }
+      } else {
+        setGoal(p, ltx + (dx / l) * 1.4, ltz + (dz / l) * 1.4, 0.95);
+      }
     }
     return;
   }
