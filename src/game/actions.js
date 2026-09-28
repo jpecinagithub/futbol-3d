@@ -82,16 +82,21 @@ export function processActions(engine, fin, dt) {
         if (engine.charge) releaseShot(engine);
         break;
       case "actionDown":
-        // A pulsada sin balón => entrada inmediata
+        // A pulsada: recordar si tenía el balón. El pase al SOLTAR solo se
+        // ejecuta si la pulsación EMPEZÓ con balón: evita el "pase fantasma"
+        // cuando se pulsa A para entrar, se gana el balón a mitad de
+        // pulsación y se suelta (el usuario pidió una entrada, no un pase).
+        engine.actionDownHadBall = hasBall;
         if (!hasBall) startTackle(engine, ctrl, fin.move);
         break;
       case "actionUp":
         // A soltada con balón: si se estaba cargando el tiro, disparar;
-        // si fue un toque, pase raso al compañero
+        // si fue un toque que empezó con balón, pase raso al compañero.
         if (hasBall) {
           if (engine.charge) releaseShot(engine);
-          else doGroundPass(engine, ctrl, fin.move);
+          else if (engine.actionDownHadBall) doGroundPass(engine, ctrl, fin.move);
         }
+        engine.actionDownHadBall = false;
         break;
       case "switch":
         switchPlayer(engine, fin.move);

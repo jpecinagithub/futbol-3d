@@ -386,6 +386,27 @@
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
+/* Botón de descarga de la repetición (vídeo .webm) */
+.replay-download {
+  position: absolute;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  background: #ffd21f;
+  color: #141414;
+  font-weight: 800;
+  font-size: 15px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55);
+}
+.replay-download:hover {
+  background: #ffe066;
+}
+
 /* Indicador de balón parado */
 .deadball-indicator {
   position: absolute;

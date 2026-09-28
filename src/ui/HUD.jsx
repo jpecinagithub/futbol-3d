@@ -112,12 +112,34 @@ export function ReplayLabel() {
   const team = lastGoal.team === "home" ? getHomeTeam() : getAwayTeam();
   return (
     <div className="replay-label">
-      <div className="replay-tag">REPETICIÓN</div>
+      <div className="replay-tag">REPETICIÓN · CÁMARA LENTA</div>
       <div className="replay-scorer">
         ⚽ {lastGoal.scorer} · {team.abbreviation} {lastGoal.minute}&prime;
       </div>
       <div className="replay-hint">Pulsa cualquier tecla para saltarla</div>
     </div>
+  );
+}
+
+/** Botón para descargar la última repetición como vídeo (.webm). Aparece
+ *  al terminar la repetición y queda disponible hasta el siguiente gol. */
+export function ReplayDownloadButton() {
+  const url = useMatchStore((s) => s.replayVideo);
+  if (!url) return null;
+  const download = () => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "repeticion-gol.webm";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    try { URL.revokeObjectURL(url); } catch { /* nada */ }
+    useMatchStore.getState().setReplayVideo(null);
+  };
+  return (
+    <button className="replay-download" onClick={download}>
+      ⬇ Descargar repetición (.webm)
+    </button>
   );
 }
 

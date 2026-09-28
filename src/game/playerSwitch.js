@@ -5,6 +5,7 @@
 // Nunca aleatorio: criterio futbolístico.
 
 import { getControlled } from "./engine";
+import { possessorOf } from "./possession";
 
 export function switchPlayer(engine, move) {
   const cur = getControlled(engine);
@@ -37,6 +38,9 @@ export function switchPlayer(engine, move) {
     }
   }
   if (best && best !== cur) {
+    // Si el usuario suelta al portador del balón, la IA no lo rifa de
+    // inmediato: 2 s conduciendo antes de pasar o tirar por su cuenta.
+    if (possessorOf(engine) === cur) cur.passCd = Math.max(cur.passCd, 2.0);
     cur.controlled = false;
     best.controlled = true;
     engine.controlledUid = best.uid;

@@ -34,6 +34,7 @@ export const useMatchStore = create((set, get) => ({
   lastGoal: null,      // último gol (para el banner y la repetición)
   controlledId: null,  // id del jugador controlado con el teclado
   notice: null,        // aviso temporal en el HUD (p. ej. "Falta de X")
+  replayVideo: null,   // blob URL del vídeo de la última repetición (descargable)
   stats: initialStats(), // faltas, tarjetas, córners, fueras de juego, penaltis, posesión, tiros
   subs: { home: 0, away: 0 }, // sustituciones usadas (máx. 5 por equipo)
 
@@ -44,6 +45,8 @@ export const useMatchStore = create((set, get) => ({
   setDuration: (durationMin) => set({ durationMin }),
   setControlled: (controlledId) => set({ controlledId }),
   setNotice: (notice) => set({ notice }),
+  /** Guarda la URL del vídeo de la última repetición (o null para ocultarlo). */
+  setReplayVideo: (replayVideo) => set({ replayVideo }),
   toggleStats: () =>
     set((s) =>
       s.phase === "playing" || s.phase === "paused"
@@ -81,6 +84,7 @@ export const useMatchStore = create((set, get) => ({
       lastGoal: null,
       controlledId: null,
       notice: null,
+      replayVideo: null,
       stats: initialStats(),
       subs: { home: 0, away: 0 },
       showStats: false,
@@ -97,6 +101,7 @@ export const useMatchStore = create((set, get) => ({
       lastGoal: null,
       controlledId: null,
       notice: null,
+      replayVideo: null,
       stats: initialStats(),
       subs: { home: 0, away: 0 },
       showStats: false,
@@ -104,13 +109,17 @@ export const useMatchStore = create((set, get) => ({
 
   /** Registra un gol y abre la fase de celebración. */
   goal: (side, scorerName) => {
-    const { score, clock, events } = get();
+    const { score, clock, events, replayVideo } = get();
+    if (replayVideo) {
+      try { URL.revokeObjectURL(replayVideo); } catch { /* nada */ }
+    }
     const minute = Math.floor(clock / 60) + 1;
     const entry = { type: "goal", team: side, scorer: scorerName, minute };
     set({
       score: { ...score, [side]: score[side] + 1 },
       events: [...events, entry],
       lastGoal: entry,
+      replayVideo: null,
       phase: "goal",
     });
   },

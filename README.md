@@ -65,8 +65,10 @@ npm run preview  # sirve la versión compilada en local
   pausa. Los expulsados y lesionados no pueden volver.
 - **Balón parado**: el HUD te indica el tipo (saque de banda, córner, saque
   de puerta, tiro libre, penalti) y los controles disponibles en cada caso.
-- **Repetición**: tras cada gol se reproduce automáticamente la jugada con el
-  rótulo *REPETICIÓN*; pulsa cualquier tecla para saltarla.
+- **Repetición**: tras cada gol se reproduce automáticamente la jugada a
+  cámara lenta (0,4x) con el rótulo *REPETICIÓN · CÁMARA LENTA*; pulsa
+  cualquier tecla para saltarla. Al terminar aparece el botón
+  *Descargar repetición (.webm)* para guardar el vídeo.
 - **Pantalla final**: marcador, goleadores y comparativa de estadísticas, con
   opción de *Revancha* (reinicia limpio) o volver al menú.
 
@@ -184,8 +186,9 @@ comportamiento ingenuo "todos al balón".
 
 El motor graba el estado de la simulación (posiciones de jugadores y balón)
 durante la jugada del gol; el reproductor la reconstruye con la cámara de
-retransmisión. No es vídeo: es la simulación real reproducida, saltable con
-cualquier tecla.
+retransmisión a cámara lenta (0,4x), saltable con cualquier tecla. Durante la
+repetición se graba el canvas con `MediaRecorder` y al terminar se ofrece la
+descarga del vídeo (`.webm`).
 
 ### Renderizado eficiente
 

@@ -10,6 +10,7 @@ import {
   HUD,
   GoalBanner,
   ReplayLabel,
+  ReplayDownloadButton,
   StatsOverlay,
   PauseMenu,
   FullTimeScreen,
@@ -57,6 +58,7 @@ export default function App() {
       {(phase === "playing" || phase === "paused") && <StatsOverlay />}
       {phase === "goal" && <GoalBanner />}
       {phase === "replay" && <ReplayLabel />}
+      {IN_MATCH.includes(phase) && <ReplayDownloadButton />}
       {phase === "paused" && <PauseMenu />}
       {phase === "fulltime" && <FullTimeScreen />}
     </div>
