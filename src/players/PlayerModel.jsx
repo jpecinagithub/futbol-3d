@@ -131,7 +131,7 @@ export function PlayerModel({ player, teamId }) {
       >
         <mesh geometry={GEO.box} material={mShirt} scale={[0.42 * look.build, 0.52, 0.26]} position={[0, 0.26, 0]} castShadow />
         {/* Dorsal en la espalda (-Z = atrás, el modelo mira a +Z) */}
-        <mesh geometry={GEO.plane} position={[0, 0.3, -0.135]} rotation={[0, Math.PI, 0]}>
+        <mesh geometry={GEO.plane} position={[0, 0.3, -0.135]} rotation={[0, Math.PI, 0]} scale={[0.3, 0.36, 1]}>
           <meshBasicMaterial map={numTex} transparent />
         </mesh>
         {/* Cabeza */}

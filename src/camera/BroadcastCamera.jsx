@@ -33,6 +33,8 @@ export function BroadcastCamera({ engine }) {
   useFrame((_, rawDt) => {
     // Fase E: durante la repetición la cámara la lleva el ReplayPlayer.
     if (useMatchStore.getState().phase === "replay") return;
+    // Gancho de test: congela la cámara para capturas de verificación.
+    if (typeof window !== "undefined" && window.__CAM_FREEZE) return;
     const dt = Math.min(rawDt, 0.05);
     const b = engine.ball;
     const ac = actionCenter(engine);

@@ -440,6 +440,7 @@ export function Match() {
       dpr={[1, 1.75]}
       camera={{ fov: 50, near: 0.5, far: 600, position: [0, 31, 47] }}
       gl={{ antialias: true }}
+      onCreated={({ scene, camera }) => { window.__scene3d = scene; window.__camera3d = camera; }}
     >
       <color attach="background" args={["#0a0f1e"]} />
       <fog attach="fog" args={["#0a0f1e", 160, 420]} />
