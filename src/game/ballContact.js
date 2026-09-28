@@ -74,10 +74,12 @@ function doControl(engine, p) {
     const a = p.facing;
     b.x = p.x + Math.cos(a) * 0.45;
     b.z = p.z + Math.sin(a) * 0.45;
-    b.y = Math.min(b.y, 0.35);
+    // Control limpio: el balón muere en el pie, sin velocidad vertical ni
+    // microbotes (antes conservaba la caída y sonaban botes encadenados).
+    b.y = BALL.radius;
     b.vx = p.vx * 0.6;
     b.vz = p.vz * 0.6;
-    if (b.vy > 1) b.vy = 1;
+    b.vy = 0;
     b.spin *= 0.3;
     p.hasBall = true;
     p.touchTimer = 0.12;

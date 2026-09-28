@@ -24,7 +24,7 @@ export const useMatchStore = create((set, get) => ({
   // ---- configuración ----
   homeTeamId: "real-madrid",
   awayTeamId: "barcelona",
-  durationMin: 5, // minutos de partido (reloj acelerado)
+  durationMin: 5, // minutos de partido (tiempo real)
   matchId: 0, // crece en cada startMatch: App remonta <Match> (revancha limpia)
 
   // ---- partido ----

@@ -49,8 +49,10 @@ export const PLAYER = {
 // de puerta según la línea cruzada y el último toque. Los jugadores siguen
 // limitados al rectángulo de juego en engine.js (MX/MZ).
 
-// Reloj: 1 segundo real = MATCH_TIME_SCALE segundos de partido.
-export const MATCH_TIME_SCALE = 6;
+// Reloj: el tiempo de partido es tiempo real (1 segundo real = 1 segundo
+// de partido). Antes iba x6 y un partido de "5 min" duraba 50 segundos
+// reales, por eso parecían terminar antes de tiempo.
+export const MATCH_TIME_SCALE = 1;
 
 // Duraciones elegibles (minutos de partido).
 export const DURATION_OPTIONS = [3, 5, 10, 15];
