@@ -16,9 +16,15 @@ import { useMatchStore } from "../stores/useMatchStore";
 import { clamp, damp } from "../utils/math";
 
 const BASE_OFFSET = new THREE.Vector3(0, 31, 47);
+// Cámara cercana (tecla Z): más baja y pegada a la jugada, sigue al balón
+// de verdad. Se mantiene por dentro de la grada (z=±42): con el seguimiento
+// lateral al 55% la cámara no pasa de z=38,3.
+const CLOSE_OFFSET = new THREE.Vector3(0, 15, 24);
 
 export function BroadcastCamera({ engine }) {
   const { camera } = useThree();
+  const mode = useMatchStore((s) => s.cameraMode);
+  const close = mode === "close";
   const target = useRef(new THREE.Vector3(0, 0, 0));
   const zoom = useRef(1);
   const lookNow = useRef(new THREE.Vector3(0, 0, 0));
@@ -34,11 +40,12 @@ export function BroadcastCamera({ engine }) {
     // Punto de interés ponderado: el balón manda (80%) con un ancla al centro
     // de la acción (20%). En lateral no persigue al balón hasta la banda
     // (clamp): el balón queda cerca del borde del encuadre, como en la TV.
+    // En cámara cercana el objetivo sí sigue al balón (clamp más amplio).
     const lx = b.x * 0.8 + ac.x * 0.2;
     const lz = b.z * 0.8 + ac.z * 0.2;
     // El target no sale del rectángulo central (la cámara no se pierde)
     const cx = clamp(lx, -45, 45);
-    const cz = clamp(lz, -17, 17);
+    const cz = close ? clamp(lz, -26, 26) : clamp(lz, -17, 17);
 
     // Zoom dinámico
     const ballSpeed = Math.hypot(b.vx, b.vz);
@@ -65,14 +72,17 @@ export function BroadcastCamera({ engine }) {
     target.current.z = damp(target.current.z, cz, kPos);
     zoom.current = damp(zoom.current, z, 1 - Math.exp(-2.2 * dt));
 
-    const off = BASE_OFFSET.clone().multiplyScalar(zoom.current);
-    // La cámara acompaña al objetivo un 32% en lateral: casi fija como
-    // una cámara de TV real. Con el seguimiento total anterior, en banda la
-    // cámara quedaba encima de la grada cercana y medio encuadre era oscuridad.
+    const off = (close ? CLOSE_OFFSET : BASE_OFFSET).clone().multiplyScalar(zoom.current);
+    // La cámara acompaña al objetivo en lateral: 32% en broadcast (casi
+    // fija como una cámara de TV real; con el seguimiento total anterior,
+    // en banda la cámara quedaba encima de la grada cercana y medio
+    // encuadre era oscuridad) y 55% en cercana (sigue la jugada sin
+    // meterse en la grada).
+    const lateralFollow = close ? 0.55 : 0.32;
     const desired = new THREE.Vector3(
       target.current.x + off.x,
       off.y,
-      off.z + target.current.z * 0.32
+      off.z + target.current.z * lateralFollow
     );
     if (!initialized.current) {
       camera.position.copy(desired);

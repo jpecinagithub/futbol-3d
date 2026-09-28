@@ -35,6 +35,7 @@ export const useMatchStore = create((set, get) => ({
   controlledId: null,  // id del jugador controlado con el teclado
   notice: null,        // aviso temporal en el HUD (p. ej. "Falta de X")
   replayVideo: null,   // blob URL del vídeo de la última repetición (descargable)
+  cameraMode: "broadcast", // "broadcast" (TV) | "close" (cercana, Z para cambiar)
   stats: initialStats(), // faltas, tarjetas, córners, fueras de juego, penaltis, posesión, tiros
   subs: { home: 0, away: 0 }, // sustituciones usadas (máx. 5 por equipo)
 
@@ -47,6 +48,9 @@ export const useMatchStore = create((set, get) => ({
   setNotice: (notice) => set({ notice }),
   /** Guarda la URL del vídeo de la última repetición (o null para ocultarlo). */
   setReplayVideo: (replayVideo) => set({ replayVideo }),
+  /** Alterna la cámara entre broadcast (TV) y cercana. */
+  toggleCamera: () =>
+    set((s) => ({ cameraMode: s.cameraMode === "broadcast" ? "close" : "broadcast" })),
   toggleStats: () =>
     set((s) =>
       s.phase === "playing" || s.phase === "paused"

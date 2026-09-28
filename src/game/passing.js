@@ -100,10 +100,10 @@ export function doGroundPass(engine, p, move, forcedMate = null) {
   if (!mate) {
     // Sin ningún compañero a alcance: pase de seguridad hacia delante.
     tx = p.x + dx * 12; tz = p.z + dz * 12;
-    speed = 14;
+    speed = 12;
   } else {
     const d = Math.hypot(mate.x - p.x, mate.z - p.z);
-    speed = clamp(9 + p.data.passing * 0.08 + d * 0.28, 10, 22);
+    speed = clamp(8 + p.data.passing * 0.07 + d * 0.24, 8, 19);
     if (isGassed(p)) speed *= 0.92;
     const tof = d / speed; // tiempo de vuelo
     tx = mate.x + mate.vx * tof * 0.85; // lead pass
@@ -166,7 +166,7 @@ export function doThroughBall(engine, p, avoidOffside = false) {
     engine.passTargetT = 2.5;
   }
   const d = Math.hypot(tx - p.x, tz - p.z);
-  const speed = clamp(13 + d * 0.35, 14, 24) * (isGassed(p) ? 0.92 : 1);
+  const speed = clamp(11 + d * 0.3, 12, 21) * (isGassed(p) ? 0.92 : 1);
   // Punto de destino del pase al hueco (la IA lleva al receptor hasta aquí).
   engine.passSpot = { x: tx, z: tz, fx: p.x, fz: p.z, uid: best ? best.uid : null, until: engine.time + 3 };
   const baseA = Math.atan2(tz - p.z, tx - p.x);

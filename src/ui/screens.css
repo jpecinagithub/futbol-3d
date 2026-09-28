@@ -407,6 +407,24 @@
   background: #ffe066;
 }
 
+/* Insignia de cámara actual (Z para cambiar): encima de la ayuda */
+.camera-badge {
+  position: absolute;
+  bottom: 58px;
+  left: 16px;
+  z-index: 20;
+  background: rgba(10, 14, 24, 0.72);
+  color: #cfe0ff;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(160, 190, 255, 0.25);
+  pointer-events: none;
+}
+.camera-badge b {
+  color: #ffd21f;
+}
+
 /* Indicador de balón parado */
 .deadball-indicator {
   position: absolute;

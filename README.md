@@ -89,6 +89,7 @@ puerta, tiros libres con barrera a 9,15 m y penaltis.
 | `A` (con balón) | Toque: pase raso al compañero (siempre a un compañero). **Mantener** >0,35 s: cargar tiro; **soltar**: disparar |
 | `A` (sin balón) | Entrada / presión hacia la dirección pulsada (o hacia el balón) |
 | `Q` | Cambiar de jugador (hacia la dirección pulsada, o el más cercano al balón) |
+| `Z` | Cambiar cámara: TV ↔ cercana |
 | `Tab` | Mostrar / ocultar las estadísticas del partido |
 | `Esc` | Pausa |
 

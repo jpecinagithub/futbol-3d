@@ -124,8 +124,8 @@ export function releaseShot(engine) {
   const charge = c.t;
   const shooting = p.data.shooting / 100;
 
-  // Potencia 9 (suave) – 28 (fuerte) m/s
-  let power = (9 + charge * 19) * (0.92 + shooting * 0.16);
+  // Potencia 8 (suave) – 23 (fuerte) m/s
+  let power = (8 + charge * 15) * (0.92 + shooting * 0.16);
   if (isGassed(p)) power *= 0.92;
 
   // Dispersión angular: que se note que no todo va donde se apunta

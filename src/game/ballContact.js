@@ -124,17 +124,19 @@ function bodyBlock(b, p, dx, dz, d) {
   }
 }
 
-/** Disputa suave: desvía el balón del poseedor sin barrida. */
+/** Disputa suave: desvía el balón del poseedor sin barrida. Débil a
+ *  propósito: el dueño del balón no lo pierde con facilidad; el balón
+ *  queda cerca para que pueda recuperarlo. */
 function pokeBall(engine, p, poss) {
   const b = engine.ball;
   const rng = engine.rng;
   const a = Math.atan2(b.z - poss.z, b.x - poss.x) + (rng() * 2 - 1) * 1.2;
-  b.vx = Math.cos(a) * 2.6;
-  b.vz = Math.sin(a) * 2.6;
+  b.vx = Math.cos(a) * 1.8;
+  b.vz = Math.sin(a) * 1.8;
   b.lastTouch = p.uid;
   b.touchCooldown = 0.2;
   poss.hasBall = false;
-  p.pokeCd = 0.8;
+  p.pokeCd = 1.5;
   try { thump(0.25); } catch { /* sin audio */ }
 }
 
@@ -245,14 +247,22 @@ export function ballPlayerContact(engine, dt) {
     const blockR = divingGk ? 1.15 : BODY_R;
 
     if (b.y < 1.25 && ballSp <= controlLimit(p, isTarget) && d < CONTACT_R) {
+      // Posesión real: si alguien es dueño del balón y este va manso, nadie
+      // se lo lleva por simple proximidad; hay que disputarlo (poke, a
+      // menos de 0,5 m) o entrar (tackle). Los pases y tiros en vuelo no
+      // tienen dueño y se siguen pudiendo interceptar igual.
+      if (poss && ballSp < 4) {
+        continue;
+      }
       // Compañero no destinatario: deja pasar los pases tensos por su carril
       if (!isTarget && kickerSide && p.side === kickerSide && ballSp > 3.5 && d > 0.55) {
         continue;
       }
       doControl(engine, p);
     } else if (d < blockR) {
-      // Disputa suave del controlado/rival cercano antes que bloqueo
-      if (poss && p.side !== poss.side && ballSp < 4 && d < 0.65 && p.pokeCd <= 0) {
+      // Disputa suave del controlado/rival cercano antes que bloqueo.
+      // Solo a distancia muy corta (el poseedor es dueño del balón).
+      if (poss && p.side !== poss.side && ballSp < 4 && d < 0.5 && p.pokeCd <= 0) {
         pokeBall(engine, p, poss);
       } else {
         bodyBlock(b, p, dx, dz, d);

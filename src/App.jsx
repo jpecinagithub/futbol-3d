@@ -25,14 +25,20 @@ export default function App() {
   const phase = useMatchStore((s) => s.phase);
   const matchId = useMatchStore((s) => s.matchId);
 
-  // Tab: overlay de estadísticas durante el partido o la pausa
+  // Tab: overlay de estadísticas durante el partido o la pausa.
+  // Z: alternar cámara broadcast / cercana durante el partido o la pausa.
   useEffect(() => {
     const onKey = (e) => {
-      if (e.code !== "Tab") return;
       const s = useMatchStore.getState();
-      if (s.phase === "playing" || s.phase === "paused") {
-        e.preventDefault();
-        s.toggleStats();
+      if (e.code === "Tab") {
+        if (s.phase === "playing" || s.phase === "paused") {
+          e.preventDefault();
+          s.toggleStats();
+        }
+      } else if (e.code === "KeyZ") {
+        if (s.phase === "playing" || s.phase === "paused" || s.phase === "goal") {
+          s.toggleCamera();
+        }
       }
     };
     window.addEventListener("keydown", onKey);

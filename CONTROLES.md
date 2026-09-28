@@ -12,6 +12,7 @@ menú de pausa (tecla `Esc` durante el partido).
 | `A` (con balón) | Toque: pase raso al compañero (siempre va a un compañero). **Mantener** >0,35 s: cargar tiro; **soltar**: disparar |
 | `A` (sin balón) | Entrada / presión hacia la dirección pulsada (o hacia el balón) |
 | `Q` | Cambiar de jugador |
+| `Z` | Cambiar cámara: TV ↔ cercana |
 | `Tab` | Mostrar / ocultar las estadísticas del partido |
 | `Esc` | Pausa |
 

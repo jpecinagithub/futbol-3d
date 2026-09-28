@@ -12,6 +12,7 @@ import { substitutionCandidates, availableSubs } from "../game/engine";
 // ---------- Marcador estilo retransmisión ----------
 export function HUD() {
   const { score, clock, getHomeTeam, getAwayTeam } = useMatchStore();
+  const cameraMode = useMatchStore((s) => s.cameraMode);
   const home = getHomeTeam();
   const away = getAwayTeam();
   const min = Math.floor(clock / 60);
@@ -28,6 +29,9 @@ export function HUD() {
         </div>
       </div>
       <DeadBallIndicator />
+      <div className="camera-badge">
+        📷 {cameraMode === "close" ? "Cercana" : "TV"} · <b>Z</b> cambia
+      </div>
       <div className="hud-hint">
         <b>IJKL/Flechas:</b> mover · <b>Shift:</b> sprint ·{" "}
         <b>A:</b> pasar / entrada (mantener: tiro) · <b>Q:</b> cambiar ·{" "}
@@ -165,6 +169,7 @@ const CONTROL_ROWS = [
   ["A (con balón)", "Toque: pase raso al compañero · Mantener: cargar tiro, soltar: disparar"],
   ["A (sin balón)", "Entrada / presión hacia el input o el balón"],
   ["Q", "Cambiar de jugador (hacia la dirección pulsada o el más cercano al balón)"],
+  ["Z", "Cambiar cámara: TV ↔ cercana"],
   ["Tab", "Mostrar / ocultar las estadísticas del partido"],
   ["Esc", "Pausa"],
 ];
