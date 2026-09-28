@@ -501,7 +501,9 @@ export function enterReady(engine) {
   if (!db.notice) {
     if (db.userKicking) {
       if (db.kind === "penalty") txt = "¡Penalti a favor! Apunta con IJKL · A para tirar (mantener: con carga)";
-      else if (db.kind === "free-kick") txt = "Tiro libre: apunta con IJKL · A para sacar (mantener: tiro con carga)";
+      else if (db.kind === "free-kick") txt = db.indirect
+        ? "Libre indirecto: apunta con IJKL · toque de A para jugar en corto (el tiro directo no vale)"
+        : "Tiro libre: apunta con IJKL · A para sacar (mantener: tiro con carga)";
       else txt = `${kindName}: apunta con IJKL · A para sacar`;
     } else if (db.userKeeping) {
       txt = "¡Penalti en contra! Mueve al portero con J/L y pulsa A para lanzarte";

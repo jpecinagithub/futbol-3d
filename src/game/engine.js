@@ -366,6 +366,10 @@ export function stepEngine(engine, dt, input, events) {
     stepDeadBall(engine, dt);
     return;
   }
+  // EXECUTED: el juego ya corre con normalidad; solo avanza el temporizador
+  // para cerrar a OPEN_PLAY y resetear las fases colectivas (si no, el estado
+  // se quedaba en EXECUTED para siempre porque stepDeadBall no se llamaba).
+  if (db.state === DB.EXECUTED) stepDeadBall(engine, dt);
 
   // 3. Balón (subpasos para estabilidad a alta velocidad)
   const sub = BALL_SUBSTEPS;
