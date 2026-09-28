@@ -629,7 +629,7 @@ function defendDuty(p, ctx, tai, time, S) {
     let diveIn = !carrier; // balón suelto: a por él
     const dCarrier = carrier ? Math.hypot(p.x - tx, p.z - tz) : Infinity;
     // Si el poseedor está parado (no progresa ni amaga), contener a 1.4 m es
-    // eterno: el presionador entra a distancia de poke (0.65 m) para
+    // eterno: el presionador entra a distancia de poke (0.6 m) para
     // disputarla. Sin esto, un portador quieto retiene el balón para siempre.
     if (carrier && dCarrier < 2.4 && Math.hypot(carrier.vx, carrier.vz) < 0.6) {
       diveIn = true;
@@ -669,6 +669,11 @@ function defendDuty(p, ctx, tai, time, S) {
       if (!carrier) {
         goPickup(p, b, looseBallPickup(p, b), 0.9);
         tryLooseTackle(engine, p);
+      } else if (Math.hypot(carrier.vx, carrier.vz) < 0.6) {
+        // Portador parado: ir AL BALÓN (a sus pies), no al centro del
+        // portador. La separación entre jugadores es 0,7 m: yendo al balón
+        // el presionador queda del lado del balón y el poke (< 0,6 m) llega.
+        setGoal(p, b.x, b.z, 1.0);
       } else setGoal(p, tx, tz, 1.0);
     } else {
       // Contención: entre el poseedor y mi portería, con ligera anticipación

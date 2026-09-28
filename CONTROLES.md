@@ -8,7 +8,7 @@ menú de pausa (tecla `Esc` durante el partido).
 | Tecla | Acción |
 |---|---|
 | `IJKL` / Flechas | Moverse (relativo a cámara broadcast: `I` = atacar, hacia arriba en pantalla) |
-| `Shift` | Sprint. Consume stamina; si baja de 25, pierdes punta y calidad técnica |
+| `S` / `Shift` | Correr. Consume stamina; si baja de 25, pierdes punta y calidad técnica |
 | `A` (con balón) | Toque: pase raso al compañero (siempre va a un compañero). **Mantener** >0,35 s: cargar tiro; **soltar**: disparar |
 | `A` (sin balón) | Entrada / presión hacia la dirección pulsada (o hacia el balón) |
 | `Q` | Cambiar de jugador |

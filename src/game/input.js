@@ -4,7 +4,7 @@
 //     shootHeld, events[] }
 //
 // Esquema simplificado:
-// - IJKL o flechas: mover (I = arriba). Shift (mantener): sprint.
+// - IJKL o flechas: mover (I = arriba). S o Shift (mantener): correr.
 // - A: tecla de acción contextual. CON balón: toque = pase raso al compañero
 //   (siempre va a un compañero); mantener >0,35 s = cargar tiro, soltar =
 //   disparar. SIN balón: entrada al pulsar. Mientras se carga el tiro, A no
@@ -16,7 +16,7 @@
 //   Sin gamepad se ignora sin errores.
 
 const GAME_KEYS = [
-  "KeyI", "KeyJ", "KeyK", "KeyL", "KeyA", "KeyQ",
+  "KeyI", "KeyJ", "KeyK", "KeyL", "KeyA", "KeyQ", "KeyS",
   "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
   "ShiftLeft", "ShiftRight",
 ];
@@ -131,9 +131,9 @@ export function pollFrameInput(st) {
   const fin = {
     move: usePadMove ? pad.move : computeMove(k),
     downCodes: k,
-    sprint: !!(k["ShiftLeft"] || k["ShiftRight"]) || pad.sprint,
+    sprint: !!(k["ShiftLeft"] || k["ShiftRight"] || k["KeyS"]) || pad.sprint,
     sprintPressed:
-      q.includes("ShiftLeft") || q.includes("ShiftRight") || pad.sprintPressed,
+      q.includes("ShiftLeft") || q.includes("ShiftRight") || q.includes("KeyS") || pad.sprintPressed,
     dribbleMod: pad.dribbleMod,
     helper: pad.helper,
     shootHeld: !!k["KeyA"] || pad.shootHeld,

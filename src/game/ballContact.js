@@ -39,7 +39,10 @@ function controlQuality(engine, p) {
   const skill = p.role === "GK" ? p.data.goalkeeper : p.data.dribbling;
   let q = skill / 100;
   const ballSp = Math.hypot(b.vx, b.vz);
-  q -= ballSp * 0.016;
+  // Balón rápido: más difícil, pero sin pasarse (un pase firme de 18 m/s
+  // resta 0.14: un buen receptor lo controla; con 0.016 restaba 0.29 y casi
+  // todos los controles de pases firmes salían malos: "el rebote").
+  q -= ballSp * 0.008;
   // Un balón (casi) parado no tiene "dirección de llegada": no se penaliza
   // la orientación (antes atan2(0,0) daba un ángulo arbitrario y un balón
   // quieto podía salir despedido por "recibir de espaldas").
@@ -87,7 +90,7 @@ function doControl(engine, p) {
     b.touchCooldown = 0.12;
   } else {
     const a = p.facing + (rng() * 2 - 1) * 0.9;
-    const dist = 0.5 + (1 - q) * 1.5;
+    const dist = 0.4 + (1 - q) * 0.9; // malo: se le escapa un poco, no 2 m
     b.x = p.x + Math.cos(a) * dist;
     b.z = p.z + Math.sin(a) * dist;
     // Un control fallido deja el balón cerca y manso (máx. 3 m/s), no lo
@@ -248,21 +251,26 @@ export function ballPlayerContact(engine, dt) {
 
     if (b.y < 1.25 && ballSp <= controlLimit(p, isTarget) && d < CONTACT_R) {
       // Posesión real: si alguien es dueño del balón y este va manso, nadie
-      // se lo lleva por simple proximidad; hay que disputarlo (poke, a
-      // menos de 0,5 m) o entrar (tackle). Los pases y tiros en vuelo no
-      // tienen dueño y se siguen pudiendo interceptar igual.
-      if (poss && ballSp < 4) {
-        continue;
+      // se lo lleva por simple proximidad; solo cabe disputarlo con el poke
+      // a menos de 0,6 m (o una entrada). Sin dueño, control normal.
+      // (El poke vive aquí y no en el else: d < 0,6 también es < 0,78.)
+      if (poss && poss.hasBall && ballSp < 4) {
+        if (p.side !== poss.side && d < 0.6 && p.pokeCd <= 0) {
+          pokeBall(engine, p, poss);
+        }
+      } else {
+        // Compañero no destinatario: deja pasar los pases tensos por su carril
+        if (!isTarget && kickerSide && p.side === kickerSide && ballSp > 3.5 && d > 0.55) {
+          continue;
+        }
+        doControl(engine, p);
       }
-      // Compañero no destinatario: deja pasar los pases tensos por su carril
-      if (!isTarget && kickerSide && p.side === kickerSide && ballSp > 3.5 && d > 0.55) {
-        continue;
-      }
-      doControl(engine, p);
     } else if (d < blockR) {
       // Disputa suave del controlado/rival cercano antes que bloqueo.
-      // Solo a distancia muy corta (el poseedor es dueño del balón).
-      if (poss && p.side !== poss.side && ballSp < 4 && d < 0.5 && p.pokeCd <= 0) {
+      // A 0.6 m: al alcance del presionador que entra a por el balón
+      // (la separación entre jugadores es 0.7 m y el balón va a los pies),
+      // pero sin el robo a distancia de antes.
+      if (poss && p.side !== poss.side && ballSp < 4 && d < 0.6 && p.pokeCd <= 0) {
         pokeBall(engine, p, poss);
       } else {
         bodyBlock(b, p, dx, dz, d);

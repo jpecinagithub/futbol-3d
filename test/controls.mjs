@@ -52,6 +52,24 @@ const vz = await st(() => window.__match.getControlled(window.__match.engine).vz
 await page.keyboard.up("KeyI");
 check("IJKL mueven (I = arriba)", vz < -0.2, `vz=${vz.toFixed(2)}`);
 
+// 1b. S = correr: claramente más rápido que andando
+await page.keyboard.down("KeyI");
+await page.waitForTimeout(4500);
+const walkV = await st(() => {
+  const p = window.__match.getControlled(window.__match.engine);
+  return Math.hypot(p.vx, p.vz);
+});
+await page.keyboard.down("KeyS");
+await page.waitForTimeout(4500);
+const sprintV = await st(() => {
+  const p = window.__match.getControlled(window.__match.engine);
+  return Math.hypot(p.vx, p.vz);
+});
+await page.keyboard.up("KeyS");
+await page.keyboard.up("KeyI");
+check("S = correr (más rápido que andando)", sprintV > walkV + 1.0,
+  `andando=${walkV.toFixed(1)} corriendo=${sprintV.toFixed(1)}`);
+
 // 2. Q cambia de jugador
 const u0 = await st(() => window.__match.getControlled(window.__match.engine).uid);
 await page.keyboard.press("KeyQ");

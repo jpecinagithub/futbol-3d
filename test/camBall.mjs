@@ -87,27 +87,25 @@ const r = await page.evaluate(async () => {
     m.processActions(e, mkFin(["actionUp"], {}), 1 / 60);
     out.shotSpeed = Math.hypot(e.ball.vx, e.ball.vz);
   }
-  // 3a. Rival FIJADO a 0,6 m del poseedor quieto (sin entradas): antes
-  // pokeaba (0,65 m), ahora no debe quitarle el balón en 2 s
+  // 3a. Rival FIJADO a 0,65 m del poseedor quieto (sin entradas): a 0,6 m
+  // ya puede pokear, pero a 0,65 m no debe quitarle el balón en 2 s
   {
     const c = m.getControlled(e);
     c.x = 0; c.z = 10; giveBall(c);
-    const riv = e.players.filter((p) => p.side === "away" && !p.isGK)
-      .sort((a, b) => Math.hypot(a.x, b.x))[0];
+    const riv = e.players.filter((p) => p.side === "away" && p.role !== "GK")[0];
     for (const p of e.players) { if (p !== c && p !== riv) { p.x = -40; p.vx = p.vz = 0; } }
     for (let i = 0; i < 120; i++) {
-      riv.x = 0.6; riv.z = 10; riv.vx = riv.vz = 0;
+      riv.x = 0.65; riv.z = 10; riv.vx = riv.vz = 0;
       riv.tackleT = 0; riv.tackleCd = 1; riv.pokeCd = 0; // sin entradas; poke permitido
       m.stepEngine(e, 1 / 60, { x: 0, z: 0 }, {});
     }
-    out.keepsAt06 = c.hasBall;
+    out.keepsAt065 = c.hasBall;
   }
   // 3b. Rival a 0,4 m: puede pokear, pero débil (balón queda a < 3 m)
   {
     const c = m.getControlled(e);
     c.x = 0; c.z = -10; giveBall(c);
-    const riv = e.players.filter((p) => p.side === "away" && !p.isGK)
-      .sort((a, b) => Math.hypot(a.x, b.x))[0];
+    const riv = e.players.filter((p) => p.side === "away" && p.role !== "GK")[0];
     riv.x = 0.4; riv.z = -10; riv.vx = riv.vz = 0; riv.tackleT = 0; riv.pokeCd = 0;
     for (const p of e.players) { if (p !== c && p !== riv) { p.x = -40; p.vx = p.vz = 0; } }
     let poked = false;
@@ -118,16 +116,48 @@ const r = await page.evaluate(async () => {
     out.pokeWeak = !poked || Math.hypot(e.ball.x - c.x, e.ball.z - c.z) < 3;
     out.poked = poked;
   }
-  // 1c. Balón suelto rodando manso: el rival SÍ puede recogerlo (sin dueño
-  // no hay restricción de posesión).
+  // 3c. Rival a distancia de poke del balón de un poseedor quieto: SÍ
+  // disputa con el poke (geometría real: balón a 0,45 m del dueño tras un
+  // buen control; el presionador que entra queda a 0,45 m del balón).
+  {
+    const c = m.getControlled(e);
+    c.x = 0; c.z = 10; c.facing = 0;
+    for (const q of e.players) q.hasBall = false;
+    c.hasBall = true; c.vx = c.vz = 0; c.touchTimer = 9;
+    const b = e.ball;
+    b.x = 0.45; b.z = 10; b.y = 0.17; b.vx = b.vy = b.vz = 0;
+    b.lastTouch = null; b.touchCooldown = 0;
+    const riv = e.players.filter((p) => p.side === "away" && p.role !== "GK")[0];
+    for (const p of e.players) { if (p !== c && p !== riv) { p.x = -40; p.vx = p.vz = 0; } }
+    riv.x = 0.9; riv.z = 10; riv.vx = riv.vz = 0; // separación 0,9: sin empujón
+    riv.tackleT = 0; riv.tackleCd = 1; riv.pokeCd = 0;
+    m.stepEngine(e, 1 / 60, { x: 0, z: 0 }, {});
+    out.pokeAt045 = !c.hasBall;
+  }
+  // 3d. Pase firme (14 m/s) a receptor decente: control BUENO, el balón
+  // queda a los pies (antes la penalización por velocidad lo hacía malo
+  // casi siempre: "el rebote").
+  {
+    const c = m.getControlled(e);
+    for (const q of e.players) { q.hasBall = false; q.aiActive = false; q.x = -40; q.vx = q.vz = 0; }
+    c.x = 0; c.z = 10; c.vx = c.vz = 0; c.hasBall = false;
+    c.data.dribbling = 75;
+    const b = e.ball;
+    b.x = -8; b.z = 10; b.y = 0.17; b.vx = 14; b.vy = 0; b.vz = 0;
+    b.lastTouch = null; b.touchCooldown = 0;
+    c.facing = Math.atan2(10 - 10, -8 - 0); // de cara al balón
+    for (let i = 0; i < 120 && !c.hasBall; i++) m.stepEngine(e, 1 / 60, { x: 0, z: 0 }, {});
+    const dAfter = Math.hypot(b.x - c.x, b.z - c.z);
+    out.firmCatch = c.hasBall && dAfter < 0.6;
+    out.firmCatchD = dAfter.toFixed(2);
+  }
   {
     const c = m.getControlled(e);
     for (const q of e.players) { q.hasBall = false; q.aiActive = false; }
     const b = e.ball;
     b.x = -5; b.z = 0; b.y = 0.17; b.vx = 6; b.vy = 0; b.vz = 0;
     b.lastTouch = null; b.touchCooldown = 0;
-    const riv = e.players.filter((p) => p.side === "away" && !p.isGK)
-      .sort((a, b2) => Math.hypot(a.x, b2.x))[0];
+    const riv = e.players.filter((p) => p.side === "away" && p.role !== "GK")[0];
     riv.x = 0; riv.z = 0; riv.vx = riv.vz = 0; riv.tackleT = 0; riv.tackleCd = 1;
     for (const p of e.players) { if (p !== riv) { p.x = -40; p.vx = p.vz = 0; } }
     let picked = false;
@@ -146,8 +176,12 @@ check("pase raso sale más manso (<=19 m/s)", r.passSpeed <= 19,
   r.passSpeed.toFixed(1) + " m/s");
 check("tiro a media carga más manso (<=21 m/s)", r.shotSpeed <= 21,
   r.shotSpeed.toFixed(1) + " m/s");
-check("poseedor conserva el balón con rival a 0,6 m", r.keepsAt06 === true,
-  String(r.keepsAt06));
+check("poseedor conserva el balón con rival a 0,65 m", r.keepsAt065 === true,
+  String(r.keepsAt065));
+check("rival a 0,45 m del balón disputa con el poke", r.pokeAt045 === true,
+  String(r.pokeAt045));
+check("pase firme 14 m/s: control bueno, balón a los pies", r.firmCatch === true,
+  `dist=${r.firmCatchD} m`);
 check("poke a 0,4 m es débil (balón queda cerca)", r.pokeWeak === true,
   `poke=${r.poked}`);
 check("balón suelto: el rival lo recoge", r.intercepted === true,

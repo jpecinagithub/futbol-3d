@@ -33,7 +33,7 @@ export function HUD() {
         📷 {cameraMode === "close" ? "Cercana" : "TV"} · <b>Z</b> cambia
       </div>
       <div className="hud-hint">
-        <b>IJKL/Flechas:</b> mover · <b>Shift:</b> sprint ·{" "}
+        <b>IJKL/Flechas:</b> mover · <b>S/Shift:</b> correr ·{" "}
         <b>A:</b> pasar / entrada (mantener: tiro) · <b>Q:</b> cambiar ·{" "}
         <b>Tab:</b> estadísticas · <b>Esc:</b> pausa
       </div>
@@ -165,7 +165,7 @@ export function StatsOverlay() {
 // ---------- Tabla de controles (integrada en la pausa) ----------
 const CONTROL_ROWS = [
   ["IJKL / Flechas", "Moverse (I = atacar, hacia arriba en pantalla)"],
-  ["Shift", "Sprint (consume stamina; fundido = menos punta)"],
+  ["S / Shift", "Correr (consume stamina; fundido = menos punta)"],
   ["A (con balón)", "Toque: pase raso al compañero · Mantener: cargar tiro, soltar: disparar"],
   ["A (sin balón)", "Entrada / presión hacia el input o el balón"],
   ["Q", "Cambiar de jugador (hacia la dirección pulsada o el más cercano al balón)"],
